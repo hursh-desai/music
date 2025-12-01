@@ -52,6 +52,7 @@ declare namespace Tone {
   const context: AudioContext;
 
   function start(): Promise<void>;
+  function now(): number;
 }
 
 export {};
