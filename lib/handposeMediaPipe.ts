@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, type RefObject } from 'react';
 import { Hands } from '@mediapipe/hands';
 import type { Hand } from '@/types/handpose';
 
@@ -9,7 +9,7 @@ import type { Hand } from '@/types/handpose';
  * This provides better multi-hand detection than ml5's wrapper
  */
 export function useHandposeMediaPipe(
-  videoRef: React.RefObject<HTMLVideoElement>
+  videoRef: RefObject<HTMLVideoElement | null>
 ): Hand[] {
   const [hands, setHands] = useState<Hand[]>([]);
   const handsRef = useRef<Hands | null>(null);
