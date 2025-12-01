@@ -142,8 +142,9 @@ export default function StringCanvas({ hands = [], video, width = 800, height = 
       if (hand.landmarks && Array.isArray(hand.landmarks)) {
         // Landmark 4 is thumb tip, landmark 8 is index finger tip
         if (hand.landmarks[4] && hand.landmarks[8]) {
-          thumbTip = hand.landmarks[4];
-          indexTip = hand.landmarks[8];
+          // Extract only x and y coordinates (first two elements)
+          thumbTip = [hand.landmarks[4][0], hand.landmarks[4][1]];
+          indexTip = [hand.landmarks[8][0], hand.landmarks[8][1]];
         }
       }
       // Try annotations format (ml5 format)
@@ -387,7 +388,8 @@ export default function StringCanvas({ hands = [], video, width = 800, height = 
             tip = hand.annotations.indexFinger[3];
           } else if (hand.landmarks && Array.isArray(hand.landmarks) && hand.landmarks[8]) {
             // Landmark 8 is index finger tip in MediaPipe format
-            tip = hand.landmarks[8];
+            // Extract only x and y coordinates (first two elements)
+            tip = [hand.landmarks[8][0], hand.landmarks[8][1]];
           }
           
           if (tip && stateRef.current.leftEnd && stateRef.current.rightEnd) {
