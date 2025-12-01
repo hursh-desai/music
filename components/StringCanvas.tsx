@@ -475,25 +475,34 @@ export default function StringCanvas({ hands = [], video, width = 800, height = 
         });
 
         // Check if hand is within grab radius AND pinching
-        if (closestToLeft && minDistToLeft <= GRAB_RADIUS && closestToLeft.isPinched) {
-          if (!state.leftGrabbed) {
-            // Start grabbing
-            state.leftGrabbed = true;
-            state.leftHandId = closestToLeft.handId;
+        if (closestToLeft !== null && minDistToLeft <= GRAB_RADIUS) {
+          const closestTip: HandTip = closestToLeft;
+          if (closestTip.isPinched) {
+            if (!state.leftGrabbed) {
+              // Start grabbing
+              state.leftGrabbed = true;
+              state.leftHandId = closestTip.handId;
+            }
+            // Stick endpoint to hand
+            state.leftEnd = { ...closestTip };
+            leftHandTip = closestTip;
           }
-          // Stick endpoint to hand
-          state.leftEnd = { ...closestToLeft };
-          leftHandTip = closestToLeft;
-        } else if (state.leftGrabbed) {
+        }
+        
+        if (state.leftGrabbed) {
           // Release if pinch stops OR hand moves beyond grab radius + hysteresis
-          if (!closestToLeft || !closestToLeft.isPinched || minDistToLeft > GRAB_RADIUS + RELEASE_HYSTERESIS) {
+          if (!closestToLeft) {
             state.leftGrabbed = false;
             state.leftHandId = null;
           } else {
-            // Still within hysteresis zone and pinching, keep grabbing
-            if (closestToLeft) {
-              state.leftEnd = { ...closestToLeft };
-              leftHandTip = closestToLeft;
+            const closestTip: HandTip = closestToLeft;
+            if (!closestTip.isPinched || minDistToLeft > GRAB_RADIUS + RELEASE_HYSTERESIS) {
+              state.leftGrabbed = false;
+              state.leftHandId = null;
+            } else {
+              // Still within hysteresis zone and pinching, keep grabbing
+              state.leftEnd = { ...closestTip };
+              leftHandTip = closestTip;
             }
           }
         }
@@ -514,25 +523,34 @@ export default function StringCanvas({ hands = [], video, width = 800, height = 
         });
 
         // Check if hand is within grab radius AND pinching
-        if (closestToRight && minDistToRight <= GRAB_RADIUS && closestToRight.isPinched) {
-          if (!state.rightGrabbed) {
-            // Start grabbing
-            state.rightGrabbed = true;
-            state.rightHandId = closestToRight.handId;
+        if (closestToRight !== null && minDistToRight <= GRAB_RADIUS) {
+          const closestTip: HandTip = closestToRight;
+          if (closestTip.isPinched) {
+            if (!state.rightGrabbed) {
+              // Start grabbing
+              state.rightGrabbed = true;
+              state.rightHandId = closestTip.handId;
+            }
+            // Stick endpoint to hand
+            state.rightEnd = { ...closestTip };
+            rightHandTip = closestTip;
           }
-          // Stick endpoint to hand
-          state.rightEnd = { ...closestToRight };
-          rightHandTip = closestToRight;
-        } else if (state.rightGrabbed) {
+        }
+        
+        if (state.rightGrabbed) {
           // Release if pinch stops OR hand moves beyond grab radius + hysteresis
-          if (!closestToRight || !closestToRight.isPinched || minDistToRight > GRAB_RADIUS + RELEASE_HYSTERESIS) {
+          if (!closestToRight) {
             state.rightGrabbed = false;
             state.rightHandId = null;
           } else {
-            // Still within hysteresis zone and pinching, keep grabbing
-            if (closestToRight) {
-              state.rightEnd = { ...closestToRight };
-              rightHandTip = closestToRight;
+            const closestTip: HandTip = closestToRight;
+            if (!closestTip.isPinched || minDistToRight > GRAB_RADIUS + RELEASE_HYSTERESIS) {
+              state.rightGrabbed = false;
+              state.rightHandId = null;
+            } else {
+              // Still within hysteresis zone and pinching, keep grabbing
+              state.rightEnd = { ...closestTip };
+              rightHandTip = closestTip;
             }
           }
         }
@@ -564,14 +582,16 @@ export default function StringCanvas({ hands = [], video, width = 800, height = 
 
       // Draw grab zones (when hands are near but not grabbing)
       if (handTips.length > 0 && state.leftEnd && state.rightEnd) {
+        const leftEnd = state.leftEnd;
+        const rightEnd = state.rightEnd;
         handTips.forEach((tip) => {
-          const distToLeft = distance(tip, state.leftEnd!);
-          const distToRight = distance(tip, state.rightEnd!);
+          const distToLeft = distance(tip, leftEnd);
+          const distToRight = distance(tip, rightEnd);
           
           // Show grab zone indicator if hand is near left endpoint but not grabbing
           if (distToLeft <= GRAB_RADIUS && !state.leftGrabbed && distToLeft < distToRight) {
             ctx.beginPath();
-            ctx.arc(state.leftEnd.x, state.leftEnd.y, GRAB_RADIUS, 0, Math.PI * 2);
+            ctx.arc(leftEnd.x, leftEnd.y, GRAB_RADIUS, 0, Math.PI * 2);
             ctx.strokeStyle = 'rgba(78, 205, 196, 0.5)';
             ctx.lineWidth = 2;
             ctx.setLineDash([5, 5]);
@@ -582,7 +602,7 @@ export default function StringCanvas({ hands = [], video, width = 800, height = 
           // Show grab zone indicator if hand is near right endpoint but not grabbing
           if (distToRight <= GRAB_RADIUS && !state.rightGrabbed && distToRight < distToLeft) {
             ctx.beginPath();
-            ctx.arc(state.rightEnd.x, state.rightEnd.y, GRAB_RADIUS, 0, Math.PI * 2);
+            ctx.arc(rightEnd.x, rightEnd.y, GRAB_RADIUS, 0, Math.PI * 2);
             ctx.strokeStyle = 'rgba(78, 205, 196, 0.5)';
             ctx.lineWidth = 2;
             ctx.setLineDash([5, 5]);

@@ -1,4 +1,5 @@
 // Tone.js is loaded via CDN and available as window.Tone
+/// <reference types="../types/tone" />
 
 export interface AudioConfig {
   synth: {
@@ -390,7 +391,7 @@ export function updateAudio(
 
   // Update distortion amount
   if (distortion) {
-    distortion.distortion = distortionAmount;
+    distortion.distortion.rampTo(distortionAmount, rampTime);
   }
 
   // Update reverb wet level
