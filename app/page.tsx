@@ -64,7 +64,7 @@ export default function Home() {
           };
         }
       } catch (error) {
-        if (typeof window !== 'undefined' && window.alert) {
+        if (typeof window !== 'undefined') {
           alert('Unable to access webcam. Please ensure permissions are granted.');
         }
       }
